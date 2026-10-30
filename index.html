@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Irregular Verbs</title>
+<style>
+:root{--bg:#f4f1ea;--card:#fff;--ink:#222;--muted:#7a7468;--accent:#2f6fdf;--accent-soft:#e8f0ff;--good:#1e9e5a;--good-soft:#e3f6ec;--bad:#d64545;--bad-soft:#fde8e8;--line:#e2ddd2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:30px;margin:12px 0 2px}
+h2{margin:6px 0}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border-radius:18px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:14px}
+.label{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+button{font:inherit;border:0;border-radius:14px;padding:14px 16px;cursor:pointer;background:var(--accent);color:#fff;-webkit-tap-highlight-color:transparent}
+button:active{transform:scale(.98)}
+button.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+button.wide{width:100%;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#fff;color:var(--ink);border:2px solid var(--line);padding:8px 12px;font-size:15px}
+.chip.on{border-color:var(--accent);background:var(--accent-soft)}
+.chip span{color:var(--muted);margin-left:4px}
+.mode{background:var(--card);color:var(--ink);text-align:left;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:4px}
+.mode b{font-size:19px}
+.mode small{color:var(--muted);font-size:14px}
+.mode:disabled{opacity:.4;cursor:default}
+.top{display:flex;align-items:center;gap:12px;margin:4px 0 16px}
+.top .x{background:transparent;color:var(--muted);padding:6px 10px;font-size:20px}
+.bar{flex:1;height:10px;background:var(--line);border-radius:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.top .count{color:var(--muted);font-size:15px;min-width:56px;text-align:right}
+.center{text-align:center}
+.base{font-size:44px;font-weight:700;letter-spacing:-.01em}
+.pl{color:var(--muted);font-size:17px;margin-top:2px}
+.ask{color:var(--accent);font-weight:600;margin-top:14px}
+.say{background:transparent;color:var(--accent);padding:4px 8px;font-size:22px;vertical-align:middle}
+.flip{cursor:pointer;min-height:240px;display:flex;flex-direction:column;justify-content:center}
+.forms{display:flex;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap}
+.forms span{background:var(--accent-soft);border-radius:10px;padding:6px 14px;font-size:24px;font-weight:600}
+.hint{color:var(--muted);font-size:15px;margin-top:18px}
+.hidden{display:none!important}
+label{display:block;text-align:left;font-size:15px;color:var(--muted);margin-top:14px}
+input{display:block;width:100%;font:inherit;font-size:22px;padding:12px 14px;margin-top:4px;border:2px solid var(--line);border-radius:12px;outline:none}
+input:focus{border-color:var(--accent)}
+input.ok{border-color:var(--good);background:var(--good-soft)}
+input.no{border-color:var(--bad);background:var(--bad-soft)}
+.fix{color:var(--bad);font-size:16px;margin-top:4px;min-height:1px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{background:var(--card);color:var(--ink);border:2px solid var(--line);font-size:22px;padding:18px 10px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.opt.good{background:var(--good-soft);border-color:var(--good)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.good-btn{background:var(--good)}
+.bad-btn{background:var(--bad)}
+.stars{font-size:44px;letter-spacing:6px}
+.big-num{font-size:56px;font-weight:700;margin:4px 0}
+.miss{text-align:left;margin-top:12px}
+.miss div{padding:6px 0;border-top:1px solid var(--line);font-size:17px}
+.miss b{display:inline-block;min-width:90px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td{padding:8px 4px;border-top:1px solid var(--line)}
+td.pl2{color:var(--muted);font-size:14px}
+td:first-child{font-weight:700}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+// base | past simple | past participle | Polish. Alternatives with "/".
+const RAW = `arise|arose|arisen|powstawać
+be|was/were|been|być
+beat|beat|beaten|bić, pokonać
+become|became|become|stawać się
+begin|began|begun|zaczynać
+bend|bent|bent|zginać
+bet|bet|bet|zakładać się
+bite|bit|bitten|gryźć
+bleed|bled|bled|krwawić
+blow|blew|blown|dmuchać, wiać
+break|broke|broken|łamać, psuć
+bring|brought|brought|przynosić
+build|built|built|budować
+burn|burned/burnt|burned/burnt|palić (się)
+buy|bought|bought|kupować
+catch|caught|caught|łapać
+choose|chose|chosen|wybierać
+come|came|come|przychodzić
+cost|cost|cost|kosztować
+cut|cut|cut|ciąć, kroić
+dig|dug|dug|kopać
+do|did|done|robić
+draw|drew|drawn|rysować
+dream|dreamed/dreamt|dreamed/dreamt|śnić, marzyć
+drink|drank|drunk|pić
+drive|drove|driven|prowadzić (auto)
+eat|ate|eaten|jeść
+fall|fell|fallen|spadać, upadać
+feed|fed|fed|karmić
+feel|felt|felt|czuć
+fight|fought|fought|walczyć
+find|found|found|znajdować
+fly|flew|flown|latać
+forbid|forbade|forbidden|zabraniać
+forget|forgot|forgotten|zapominać
+forgive|forgave|forgiven|wybaczać
+freeze|froze|frozen|zamarzać
+get|got|got/gotten|dostawać
+give|gave|given|dawać
+go|went|gone|iść, jechać
+grow|grew|grown|rosnąć
+hang|hung|hung|wieszać
+have|had|had|mieć
+hear|heard|heard|słyszeć
+hide|hid|hidden|chować (się)
+hit|hit|hit|uderzać
+hold|held|held|trzymać
+hurt|hurt|hurt|ranić, boleć
+keep|kept|kept|trzymać, zatrzymać
+know|knew|known|wiedzieć, znać
+lay|laid|laid|kłaść
+lead|led|led|prowadzić
+learn|learned/learnt|learned/learnt|uczyć się
+leave|left|left|wychodzić, zostawiać
+lend|lent|lent|pożyczać (komuś)
+let|let|let|pozwalać
+lie|lay|lain|leżeć
+light|lit|lit|zapalać
+lose|lost|lost|gubić, przegrywać
+make|made|made|robić, tworzyć
+mean|meant|meant|znaczyć
+meet|met|met|spotykać
+pay|paid|paid|płacić
+put|put|put|kłaść
+read|read|read|czytać
+ride|rode|ridden|jeździć (rowerem, konno)
+ring|rang|rung|dzwonić
+rise|rose|risen|wznosić się
+run|ran|run|biegać
+say|said|said|powiedzieć
+see|saw|seen|widzieć
+sell|sold|sold|sprzedawać
+send|sent|sent|wysyłać
+set|set|set|ustawiać
+shake|shook|shaken|trząść
+shine|shone|shone|świecić
+shoot|shot|shot|strzelać
+show|showed|shown/showed|pokazywać
+shut|shut|shut|zamykać
+sing|sang|sung|śpiewać
+sink|sank|sunk|tonąć
+sit|sat|sat|siedzieć
+sleep|slept|slept|spać
+smell|smelled/smelt|smelled/smelt|pachnieć, wąchać
+speak|spoke|spoken|mówić
+spell|spelled/spelt|spelled/spelt|literować
+spend|spent|spent|wydawać, spędzać
+spill|spilled/spilt|spilled/spilt|rozlewać
+stand|stood|stood|stać
+steal|stole|stolen|kraść
+stick|stuck|stuck|kleić
+sting|stung|stung|żądlić
+swim|swam|swum|pływać
+take|took|taken|brać
+teach|taught|taught|uczyć (kogoś)
+tear|tore|torn|drzeć
+tell|told|told|mówić, opowiadać
+think|thought|thought|myśleć
+throw|threw|thrown|rzucać
+understand|understood|understood|rozumieć
+wake|woke|woken|budzić (się)
+wear|wore|worn|nosić (ubranie)
+win|won|won|wygrywać
+write|wrote|written|pisać`;
+
+const VERBS = RAW.trim().split("\n").map(l => { const [b, p, pp, pl] = l.split("|"); return { b, p, pp, pl }; });
+const alts = s => s.split("/");
+const first = s => alts(s)[0];
+const nice = s => alts(s).join(" / ");
+const norm = s => s.trim().toLowerCase().replace(/\s+/g, " ");
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const ROUND = 10, SPEED_SECONDS = 60;
+
+function pattern(v) {
+  const p = first(v.p), pp = first(v.pp);
+  if (v.b === p && p === pp) return "aaa";
+  if (p === pp) return "abb";
+  return "abc";
+}
+
+// Per-device memory: verbs got wrong, and the best 60-second score.
+function load(key, fallback) { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : fallback; } catch (e) { return fallback; } }
+function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+const mistakes = new Set(load("iv-mistakes", []));
+let best = load("iv-best", 0);
+function mark(v, ok) { ok ? mistakes.delete(v.b) : mistakes.add(v.b); save("iv-mistakes", [...mistakes]); }
+
+const SETS = {
+  all: { name: "All verbs", f: () => true },
+  aaa: { name: "cut · cut · cut", f: v => pattern(v) === "aaa" },
+  abb: { name: "buy · bought · bought", f: v => pattern(v) === "abb" },
+  abc: { name: "go · went · gone", f: v => pattern(v) === "abc" },
+  miss: { name: "My mistakes", f: v => mistakes.has(v.b) },
+};
+let setKey = "all";
+const inSet = k => VERBS.filter(SETS[k].f);
+
+let voice = null;
+function pickVoice() { const vs = speechSynthesis.getVoices(); voice = vs.find(v => v.lang === "en-GB") || vs.find(v => v.lang.startsWith("en")) || null; }
+if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text); u.lang = "en-GB"; if (voice) u.voice = voice; u.rate = .85;
+  speechSynthesis.speak(u);
+}
+const sayAll = v => speak(`${v.b}. ${first(v.p)}. ${first(v.pp)}.`);
+
+const app = document.getElementById("app");
+const $ = s => app.querySelector(s);
+const render = html => { app.innerHTML = html; window.scrollTo(0, 0); };
+
+/* ---------- Home ---------- */
+function home() {
+  stopTimer();
+  if (setKey === "miss" && !mistakes.size) setKey = "all";
+  const n = inSet(setKey).length;
+  render(`
+    <h1>Irregular Verbs</h1>
+    <p class="sub">Pick the verbs, then a game.</p>
+    <div class="card">
+      <div class="label">Verbs</div>
+      <div class="chips">${Object.entries(SETS).map(([k, s]) =>
+        `<button class="chip ${k === setKey ? "on" : ""}" data-set="${k}" ${k === "miss" && !mistakes.size ? "disabled" : ""}>${s.name}<span>${inSet(k).length}</span></button>`).join("")}</div>
+    </div>
+    <div class="grid">
+      <button class="mode" data-mode="flash"><b>🃏 Cards</b><small>Think, then turn the card</small></button>
+      <button class="mode" data-mode="type"><b>✏️ Write</b><small>Type both forms</small></button>
+      <button class="mode" data-mode="choose"><b>✅ Choose</b><small>Pick the right form</small></button>
+      <button class="mode" data-mode="speed"><b>⏱️ 60 seconds</b><small>${best ? "Best: " + best : "How many can you get?"}</small></button>
+    </div>
+    <button class="ghost wide" id="list">📖 See the list (${n})</button>`);
+  app.querySelectorAll("[data-set]").forEach(b => b.onclick = () => { setKey = b.dataset.set; home(); });
+  app.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => start(b.dataset.mode));
+  $("#list").onclick = list;
+}
+
+function list() {
+  render(`
+    <div class="top"><button class="x" id="back">←</button><h2 style="flex:1">${SETS[setKey].name}</h2></div>
+    <div class="card"><table>${inSet(setKey).map((v, i) =>
+      `<tr><td>${v.b}</td><td>${nice(v.p)}</td><td>${nice(v.pp)}</td><td class="pl2">${v.pl}</td><td><button class="say" data-i="${i}">🔊</button></td></tr>`).join("")}</table></div>`);
+  const verbs = inSet(setKey);
+  app.querySelectorAll("[data-i]").forEach(b => b.onclick = () => sayAll(verbs[b.dataset.i]));
+  $("#back").onclick = home;
+}
+
+/* ---------- Game ---------- */
+let G = null;
+function start(mode) {
+  const pool = inSet(setKey);
+  if (!pool.length) return;
+  G = { mode, pool, queue: shuffle(pool), i: 0, right: 0, wrong: [] };
+  if (mode !== "speed") G.queue = G.queue.slice(0, Math.min(ROUND, pool.length));
+  else { G.end = Date.now() + SPEED_SECONDS * 1000; G.timer = setInterval(tick, 200); }
+  next();
+}
+function stopTimer() { if (G && G.timer) { clearInterval(G.timer); G.timer = null; } }
+function tick() {
+  const left = Math.max(0, G.end - Date.now());
+  const bar = $(".bar i"), c = $(".count");
+  if (bar) bar.style.width = (left / (SPEED_SECONDS * 1000) * 100) + "%";
+  if (c) c.textContent = Math.ceil(left / 1000) + " s";
+  if (!left) done();
+}
+function topBar() {
+  const speed = G.mode === "speed";
+  const pct = speed ? Math.max(0, G.end - Date.now()) / (SPEED_SECONDS * 1000) * 100 : G.i / G.queue.length * 100;
+  const count = speed ? Math.ceil(Math.max(0, G.end - Date.now()) / 1000) + " s" : `${G.i + 1} / ${G.queue.length}`;
+  return `<div class="top"><button class="x" id="quit">✕</button><div class="bar"><i style="width:${pct}%"></i></div><span class="count">${count}</span></div>`;
+}
+function next() {
+  if (G.mode === "speed") { if (G.i >= G.queue.length) G.queue = G.queue.concat(shuffle(G.pool)); }
+  else if (G.i >= G.queue.length) return done();
+  const v = G.queue[G.i];
+  ({ flash: cardQ, type: writeQ, choose: chooseQ, speed: chooseQ })[G.mode](v);
+  $("#quit").onclick = home;
+}
+function answered(v, ok) {
+  mark(v, ok);
+  if (ok) G.right++; else if (!G.wrong.includes(v)) G.wrong.push(v);
+  G.i++;
+}
+
+function cardQ(v) {
+  render(topBar() + `
+    <div class="card center flip" id="card">
+      <div class="base">${v.b}</div><div class="pl">${v.pl}</div>
+      <div class="forms hidden" id="forms"><span>${nice(v.p)}</span><span>${nice(v.pp)}</span></div>
+      <div class="hint" id="hint">Say the two forms, then tap to turn</div>
+    </div>
+    <div class="grid hidden" id="judge"><button class="bad-btn" id="no">Not yet</button><button class="good-btn" id="yes">I knew it</button></div>`);
+  $("#card").onclick = () => {
+    if (!$("#forms").classList.contains("hidden")) return sayAll(v);
+    $("#forms").classList.remove("hidden"); $("#judge").classList.remove("hidden");
+    $("#hint").textContent = "Tap to hear it again"; sayAll(v);
+  };
+  $("#yes").onclick = () => { answered(v, true); next(); };
+  $("#no").onclick = () => { answered(v, false); next(); };
+}
+
+function writeQ(v) {
+  render(topBar() + `
+    <div class="card center">
+      <div class="base">${v.b}<button class="say" id="say">🔊</button></div><div class="pl">${v.pl}</div>
+      <label>Past simple<input id="a1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></label><div class="fix" id="f1"></div>
+      <label>Past participle<input id="a2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></label><div class="fix" id="f2"></div>
+    </div>
+    <button class="wide" id="go">Check</button>`);
+  const a1 = $("#a1"), a2 = $("#a2"), go = $("#go");
+  let checked = false;
+  a1.focus();
+  $("#say").onclick = () => speak(v.b);
+  function check() {
+    if (checked) return next();
+    checked = true;
+    const ok1 = alts(v.p).includes(norm(a1.value)), ok2 = alts(v.pp).includes(norm(a2.value));
+    a1.className = ok1 ? "ok" : "no"; a2.className = ok2 ? "ok" : "no";
+    if (!ok1) $("#f1").textContent = "→ " + nice(v.p);
+    if (!ok2) $("#f2").textContent = "→ " + nice(v.pp);
+    a1.readOnly = a2.readOnly = true;
+    answered(v, ok1 && ok2);
+    sayAll(v);
+    go.textContent = "Next →"; go.focus();
+  }
+  go.onclick = check;
+  a1.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); checked ? next() : a2.focus(); } };
+  a2.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); check(); } };
+}
+
+// Wrong options that look believable: the other form, the base, a made-up "-ed" form.
+function regular(b) {
+  if (b.endsWith("e")) return b + "d";
+  if (/[^aeiou]y$/.test(b)) return b.slice(0, -1) + "ied";
+  return b + "ed";
+}
+function chooseQ(v) {
+  const kind = Math.random() < .5 ? "p" : "pp";
+  const right = alts(v[kind]);
+  const answer = right[0];
+  const other = first(v[kind === "p" ? "pp" : "p"]);
+  let wrong = [other, v.b, regular(v.b), first(v.p) + "ed"].filter(w => !right.includes(w));
+  wrong = [...new Set(wrong)];
+  for (const o of shuffle(VERBS)) {
+    if (wrong.length >= 6) break;
+    const w = first(o[kind]);
+    if (!right.includes(w) && !wrong.includes(w) && w[0] === answer[0]) wrong.push(w);
+  }
+  for (const o of shuffle(VERBS)) {
+    if (wrong.length >= 3) break;
+    const w = first(o[kind]);
+    if (!right.includes(w) && !wrong.includes(w)) wrong.push(w);
+  }
+  const opts = shuffle([answer, ...shuffle(wrong.slice(0, 4)).slice(0, 3)]);
+  render(topBar() + `
+    <div class="card center">
+      <div class="base">${v.b}</div><div class="pl">${v.pl}</div>
+      <div class="ask">${kind === "p" ? "Past simple?" : "Past participle?"}</div>
+    </div>
+    <div class="opts">${opts.map(o => `<button class="opt">${o}</button>`).join("")}</div>
+    ${G.mode === "speed" ? `<p class="center sub" style="margin-top:14px">Right: <b>${G.right}</b></p>` : ""}`);
+  let done_ = false;
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    if (done_) return; done_ = true;
+    const ok = right.includes(b.textContent);
+    app.querySelectorAll(".opt").forEach(x => { if (right.includes(x.textContent)) x.classList.add("good"); });
+    if (!ok) b.classList.add("bad");
+    answered(v, ok);
+    if (G.mode !== "speed") sayAll(v);
+    setTimeout(() => { if (G && G.mode !== "over") next(); }, G.mode === "speed" ? (ok ? 350 : 1100) : (ok ? 1100 : 2200));
+  });
+}
+
+function done() {
+  stopTimer();
+  const speed = G.mode === "speed", mode = G.mode;
+  G.mode = "over";
+  let head;
+  if (speed) {
+    const record = G.right > best;
+    if (record) { best = G.right; save("iv-best", best); }
+    head = `<div class="label">In ${SPEED_SECONDS} seconds</div><div class="big-num">${G.right}</div><div>${record ? "🏆 New best!" : "Best: " + best}</div>`;
+  } else {
+    const n = G.queue.length, pct = G.right / n;
+    const stars = pct === 1 ? 3 : pct >= .7 ? 2 : pct >= .4 ? 1 : 0;
+    head = `<div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div><h2>${G.right} of ${n} right</h2>`;
+  }
+  const miss = G.wrong.length ? `<div class="miss"><div class="label">Practise these</div>${G.wrong.map(v =>
+    `<div><b>${v.b}</b> ${nice(v.p)} · ${nice(v.pp)}</div>`).join("")}</div>` : "";
+  render(`<div class="card center">${head}${miss}</div>
+    <button class="wide" id="again">Play again</button>
+    ${G.wrong.length ? `<button class="wide good-btn" id="fix" style="margin-top:10px">Practise my mistakes</button>` : ""}
+    <button class="ghost wide" id="home" style="margin-top:10px">Home</button>`);
+  $("#again").onclick = () => start(mode);
+  if ($("#fix")) $("#fix").onclick = () => { setKey = "miss"; start(mode === "speed" ? "choose" : mode); };
+  $("#home").onclick = home;
+}
+
+home();
+</script>
+</body>
+</html>
